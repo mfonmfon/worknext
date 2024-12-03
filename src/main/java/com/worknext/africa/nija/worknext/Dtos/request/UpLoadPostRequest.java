@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class UpLoadPostRequest {
+    private Long jobPostId;
     private Long employerId;
     private String jobTitle;
     private String jobDescription;
