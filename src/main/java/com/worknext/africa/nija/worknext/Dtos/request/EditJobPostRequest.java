@@ -14,5 +14,5 @@ public class EditJobPostRequest {
     private String jobDescription;
     private JobType jobType;
     private BigDecimal salaryRange;
-    private LocalDateTime postedAt;
+    private LocalDateTime lastModifiedAt;
 }

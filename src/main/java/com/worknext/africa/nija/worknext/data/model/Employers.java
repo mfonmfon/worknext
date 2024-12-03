@@ -21,6 +21,7 @@ public class Employers {
     private String companyDescription;
     private String email;
     private String password;
+    @Enumerated
     private UserRole role;
     @OneToMany(mappedBy = "employers", cascade = {PERSIST})
     private List<JobPost> jobPosts;
