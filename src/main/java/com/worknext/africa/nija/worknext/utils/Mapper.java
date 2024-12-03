@@ -14,4 +14,6 @@ public class Mapper {
         if (role == null || role.toString().trim().isEmpty()) throw new RequiredFieldException("Role is required");
     }
 
+
+
 }

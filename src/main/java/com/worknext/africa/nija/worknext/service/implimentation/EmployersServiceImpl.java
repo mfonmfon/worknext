@@ -2,11 +2,9 @@ package com.worknext.africa.nija.worknext.service.implimentation;
 
 import com.worknext.africa.nija.worknext.Dtos.request.EditProfileRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.EmployerRegistrationRequest;
+import com.worknext.africa.nija.worknext.Dtos.request.LoginUserRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.UpLoadPostRequest;
-import com.worknext.africa.nija.worknext.Dtos.response.DeleteUserResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.EditProfileResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.EmployerRegistrationResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.UpLoadPostResponse;
+import com.worknext.africa.nija.worknext.Dtos.response.*;
 import com.worknext.africa.nija.worknext.data.enums.UserRole;
 import com.worknext.africa.nija.worknext.data.model.Employees;
 import com.worknext.africa.nija.worknext.data.model.Employers;
@@ -23,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.worknext.africa.nija.worknext.utils.Mapper.validateAllNullAndEmptyInput;
 
@@ -35,11 +34,15 @@ public class EmployersServiceImpl implements EmployersService {
     private final JobPostRepository jobPostRepository;
     private final ModelMapper modelMapper;
     private final JobPostService jobPostService;
+    private final Pattern VALIDATE_USERS_EMAILS  = Pattern.compile("\"^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    private final Pattern VALIDATE_PASSWORDS = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
 
     @Override
-    public EmployerRegistrationResponse registerEmployers(EmployerRegistrationRequest registrationRequest) throws UserAlreadyExistsException, RequiredFieldException {
+    public EmployerRegistrationResponse registerEmployers(EmployerRegistrationRequest registrationRequest) throws UserAlreadyExistsException, RequiredFieldException, WrongEmailOrPasswordException {
         validateEmployersEmail(registrationRequest.getEmail());
         Employers employers = buildEmployersRegistrations(registrationRequest);
+        if(isValidEmail(registrationRequest.getEmail()))throw new WrongEmailOrPasswordException("wrong email or password");
+        if(isValidPassword(registrationRequest.getPassword()))throw new WrongEmailOrPasswordException("Wrong email or password");
         validateAllNullAndEmptyInput(registrationRequest.getEmail(),
                 registrationRequest.getCompanyDescription(), registrationRequest.getCompanyLocation()
                 , registrationRequest.getCompanyName(), registrationRequest.getPassword(),registrationRequest.getRole());
@@ -48,21 +51,23 @@ public class EmployersServiceImpl implements EmployersService {
         employeeResponse.setMessage("Welcome onboard");
         return employeeResponse;
     }
+    private boolean isValidPassword(String password) {return VALIDATE_PASSWORDS.matcher(password).matches();}
+    private boolean isValidEmail(String email) {return VALIDATE_USERS_EMAILS.matcher(email).matches();}
+    private boolean isInputNullOrEmpty(String userInput) {return userInput == null || userInput.isEmpty();}
 
-    private boolean isInputNullOrEmpty(String userInput) {
-        return userInput == null || userInput.isEmpty();
-    }
 
     private void validateEmployersEmail(String email) throws UserAlreadyExistsException {
-        boolean isEmployerAlreadyExists = employersRepository.existsByEmail(email);
-        if (isEmployerAlreadyExists)throw new UserAlreadyExistsException("Email already exists");
+        boolean isEmailEmpty = employersRepository.existsByEmail(email);
+        if(isEmailEmpty) throw new UserAlreadyExistsException("User with this email already exists");
     }
 
     @Override
     public UpLoadPostResponse uploadPost(UpLoadPostRequest upLoadPostRequest) throws EmployersNotFoundException, IdNotFoundException, JobsNotFoundException {
         UpLoadPostResponse upLoadPostResponse = jobPostService.uploadPost(upLoadPostRequest);
-        JobPost jobPost = jobPostRepository.findById(upLoadPostRequest.getJobPostId()).orElseThrow(()-> new JobsNotFoundException("Job not found"));
-        Employers employers = employersRepository.findById(upLoadPostRequest.getEmployerId()).orElseThrow(()-> new EmployersNotFoundException("Employer not found"));
+        JobPost jobPost = jobPostRepository.findById(upLoadPostRequest.getJobPostId())
+                .orElseThrow(()-> new JobsNotFoundException("Job not found"));
+        Employers employers = employersRepository.findById(upLoadPostRequest.getEmployerId())
+                .orElseThrow(()-> new EmployersNotFoundException("Employer not found"));
         List<JobPost> jobPosts = employers.getJobPosts();
         jobPosts.add(jobPost);
         employers.setJobPosts(jobPosts);
@@ -123,6 +128,18 @@ public class EmployersServiceImpl implements EmployersService {
         return deleteResponse;
     }
 
+    @Override
+    public LoginUserResponse login(LoginUserRequest loginUserRequest) throws EmployersNotFoundException, WrongEmailOrPasswordException {
+        Employers employers = employersRepository.findById(loginUserRequest.getEmployersId()).
+                orElseThrow(()-> new EmployersNotFoundException("You dont have an account with Worknext"));
+        if (!employers.getPassword().equals(loginUserRequest.getPassword())) throw new WrongEmailOrPasswordException("Wrong email or password");
+        employers.setEmail(loginUserRequest.getEmail());
+        employers.setPassword(loginUserRequest.getPassword());
+        LoginUserResponse loginUserResponse = modelMapper.map(employers, LoginUserResponse.class);
+        loginUserResponse.setMessage("Login successful");
+        return loginUserResponse;
+    }
+
     private static Employers buildEmployersRegistrations(EmployerRegistrationRequest registrationRequest) {
         Employers employers = new Employers();
         employers.setCompanyName(registrationRequest.getCompanyName());
@@ -133,4 +150,5 @@ public class EmployersServiceImpl implements EmployersService {
         employers.setRole(registrationRequest.getRole());
         return employers;
     }
+
 }

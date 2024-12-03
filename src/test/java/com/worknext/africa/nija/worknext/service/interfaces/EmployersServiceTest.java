@@ -29,7 +29,8 @@ public class EmployersServiceTest {
     }
 
     @Test
-    public void testThatEmployersCanRegister() throws UserAlreadyExistsException, RequiredFieldException {
+    public void testThatEmployersCanRegister() throws UserAlreadyExistsException,
+            RequiredFieldException, WrongEmailOrPasswordException {
         EmployerRegistrationRequest registrationRequest = buildEmployerRegistrationRequest();
         EmployerRegistrationResponse employerRegistrationResponse = employerService.registerEmployers(registrationRequest);
         assertNotNull(employerRegistrationResponse);
@@ -39,7 +40,7 @@ public class EmployersServiceTest {
     private static EmployerRegistrationRequest buildEmployerRegistrationRequest() {
         EmployerRegistrationRequest registrationRequest = new EmployerRegistrationRequest();
         registrationRequest.setCompanyName("WorkNext company");
-        registrationRequest.setEmail("worknext@example.com");
+        registrationRequest.setEmail("worknext1@example.com");
         registrationRequest.setPassword("password111");
         registrationRequest.setCompanyLocation("Lagos, Nigeria");
         registrationRequest.setCompanyDescription("WorkNext is a revolutionary platform that connects job seekers with employers.");
@@ -49,7 +50,7 @@ public class EmployersServiceTest {
 
     @Test
     public void testThatEmployersCanUploadJobOpening() throws EmployersNotFoundException,
-            IdNotFoundException, JobsNotFoundException, UserAlreadyExistsException, RequiredFieldException {
+            IdNotFoundException, JobsNotFoundException, UserAlreadyExistsException, RequiredFieldException, WrongEmailOrPasswordException {
         buildEmployerRegistrationRequest();
         EmployerRegistrationResponse employerRegistrationResponse = employerService.registerEmployers(buildEmployerRegistrationRequest());
         assertNotNull(employerRegistrationResponse);
@@ -70,7 +71,7 @@ public class EmployersServiceTest {
     }
 
     @Test
-    public void testThatEmployersCanUpdateProfile() throws JobsNotFoundException, EmployersNotFoundException, IdNotFoundException, UserAlreadyExistsException, RequiredFieldException {
+    public void testThatEmployersCanUpdateProfile() throws JobsNotFoundException, EmployersNotFoundException, IdNotFoundException, UserAlreadyExistsException, RequiredFieldException, WrongEmailOrPasswordException {
         buildEmployerRegistrationRequest();
         EmployerRegistrationResponse employerRegistrationResponse = employerService.registerEmployers(buildEmployerRegistrationRequest());
         buildUpLoadJobPostRequest();

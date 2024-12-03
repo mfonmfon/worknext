@@ -4,6 +4,7 @@ import com.worknext.africa.nija.worknext.data.model.Employers;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EmployersRepository extends JpaRepository<Employers, Long> {
     boolean existsByEmail(String email);
@@ -15,5 +16,7 @@ public interface EmployersRepository extends JpaRepository<Employers, Long> {
     List<Employers> findByCompanyLocation(String companyLocation);
 
     List<Employers> findByEmail(String email);
+
+    Optional<Employers> getUserByEmail(String email);
 
 }

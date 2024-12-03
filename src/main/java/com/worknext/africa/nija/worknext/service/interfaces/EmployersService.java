@@ -2,18 +2,16 @@ package com.worknext.africa.nija.worknext.service.interfaces;
 
 import com.worknext.africa.nija.worknext.Dtos.request.EditProfileRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.EmployerRegistrationRequest;
+import com.worknext.africa.nija.worknext.Dtos.request.LoginUserRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.UpLoadPostRequest;
-import com.worknext.africa.nija.worknext.Dtos.response.DeleteUserResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.EditProfileResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.EmployerRegistrationResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.UpLoadPostResponse;
+import com.worknext.africa.nija.worknext.Dtos.response.*;
 import com.worknext.africa.nija.worknext.data.model.Employers;
 import com.worknext.africa.nija.worknext.exceptions.*;
 
 import java.util.List;
 
 public interface EmployersService {
-    EmployerRegistrationResponse registerEmployers(EmployerRegistrationRequest registrationRequest) throws UserAlreadyExistsException, RequiredFieldException;
+    EmployerRegistrationResponse registerEmployers(EmployerRegistrationRequest registrationRequest) throws UserAlreadyExistsException, RequiredFieldException, WrongEmailOrPasswordException;
 
     UpLoadPostResponse uploadPost(UpLoadPostRequest upLoadPostRequest) throws EmployersNotFoundException, IdNotFoundException, JobsNotFoundException;
 
@@ -33,4 +31,5 @@ public interface EmployersService {
 
     DeleteUserResponse deleteEmployer(Long jobPostId) throws EmployersNotFoundException;
 
+    LoginUserResponse login(LoginUserRequest loginUserRequest) throws EmployersNotFoundException, WrongEmailOrPasswordException;
 }
