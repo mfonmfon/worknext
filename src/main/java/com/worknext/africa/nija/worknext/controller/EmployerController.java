@@ -2,6 +2,7 @@ package com.worknext.africa.nija.worknext.controller;
 
 import com.worknext.africa.nija.worknext.Dtos.request.EditProfileRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.EmployerRegistrationRequest;
+import com.worknext.africa.nija.worknext.Dtos.request.LoginUserRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.UpLoadPostRequest;
 import com.worknext.africa.nija.worknext.Dtos.response.*;
 import com.worknext.africa.nija.worknext.exceptions.EmployersNotFoundException;
@@ -26,6 +27,17 @@ public class EmployerController {
             return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginUserRequest loginUserRequest){
+        try{
+            LoginUserResponse loginUserResponse = employerService.login(loginUserRequest);
+            return new ResponseEntity<>(new ApiResponse(true, loginUserResponse), HttpStatus.OK);
+        }
+        catch(Exception exception){
+            return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
     @PostMapping("/uploadPost")
     public ResponseEntity<?> uploadPost(@RequestBody UpLoadPostRequest upLoadPostRequest){
         try {
@@ -35,8 +47,8 @@ public class EmployerController {
             return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
-    @PutMapping("/editPost")
-    public ResponseEntity<?> editPost(@RequestBody EditProfileRequest editProfileRequest){
+    @PutMapping("/editProfile")
+    public ResponseEntity<?> editProfile(@RequestBody EditProfileRequest editProfileRequest){
         try{
             EditProfileResponse editProfileResponse = employerService.editProfile(editProfileRequest);
             return new ResponseEntity<>(new ApiResponse(true, editProfileResponse), HttpStatus.OK);
@@ -46,7 +58,7 @@ public class EmployerController {
     }
 
     @DeleteMapping("/deletePost/{jobPostId}")
-    public ResponseEntity<?> deletePost(@PathVariable Long jobPostId){
+    public ResponseEntity<?> deleteAccount(@PathVariable Long jobPostId){
         try{
             DeleteUserResponse deleteUserResponse = employerService.deleteEmployer(jobPostId);
             return new ResponseEntity<>(new ApiResponse(true, deleteUserResponse), HttpStatus.OK);

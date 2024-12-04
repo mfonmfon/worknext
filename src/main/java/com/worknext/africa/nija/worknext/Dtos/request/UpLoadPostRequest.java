@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class UpLoadPostRequest {
     private Long jobPostId;
     private Long employerId;
+    private String email;
     private String jobTitle;
     private String jobDescription;
     private JobType jobType;

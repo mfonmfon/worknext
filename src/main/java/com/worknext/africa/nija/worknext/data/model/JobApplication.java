@@ -4,11 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 @Entity
-@Getter
 @Setter
-public class Resume {
+@Getter
+public class JobApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,17 +15,13 @@ public class Resume {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private String summary;
-    private String certificate;
-    private String professionalExperience;
-    private String skills;
-    private String projects;
-    private String education;
-    private LocalDateTime startedAt;
-    private LocalDateTime  endedAt;
+    private String coverLetter;
+    private String linkedInUrl;
     @ManyToOne
-    @JoinColumn(name = "employees_id")
+    @JoinColumn(name = "employee_id")
     private Employee employee;
 
-
+    @OneToOne
+    @JoinColumn(name = "resume_id")
+    private Resume resume;
 }

@@ -1,15 +1,8 @@
 package com.worknext.africa.nija.worknext.service.implimentation;
 
-import com.worknext.africa.nija.worknext.Dtos.request.EditProfileRequest;
-import com.worknext.africa.nija.worknext.Dtos.request.EmployerRegistrationRequest;
-import com.worknext.africa.nija.worknext.Dtos.request.UpLoadPostRequest;
-import com.worknext.africa.nija.worknext.Dtos.response.DeleteUserResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.EditProfileResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.EmployerRegistrationResponse;
-import com.worknext.africa.nija.worknext.Dtos.response.UpLoadPostResponse;
-import com.worknext.africa.nija.worknext.data.enums.UserRole;
-import com.worknext.africa.nija.worknext.data.model.Employees;
-import com.worknext.africa.nija.worknext.data.model.Employers;
+import com.worknext.africa.nija.worknext.Dtos.request.*;
+import com.worknext.africa.nija.worknext.Dtos.response.*;
+import com.worknext.africa.nija.worknext.data.model.Employer;
 import com.worknext.africa.nija.worknext.data.model.JobPost;
 import com.worknext.africa.nija.worknext.data.repository.EmployersRepository;
 import com.worknext.africa.nija.worknext.data.repository.JobPostRepository;
@@ -19,10 +12,11 @@ import com.worknext.africa.nija.worknext.service.interfaces.JobPostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.worknext.africa.nija.worknext.utils.Mapper.validateAllNullAndEmptyInput;
 
@@ -31,78 +25,96 @@ import static com.worknext.africa.nija.worknext.utils.Mapper.validateAllNullAndE
 @Transactional
 public class EmployersServiceImpl implements EmployersService {
 
+
+    private final PasswordEncoder passwordEncoder;
     private final EmployersRepository employersRepository;
     private final JobPostRepository jobPostRepository;
     private final ModelMapper modelMapper;
     private final JobPostService jobPostService;
+    private final Pattern VALIDATE_USERS_EMAILS  = Pattern.compile("\"^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    private final Pattern VALIDATE_PASSWORDS = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
 
     @Override
-    public EmployerRegistrationResponse registerEmployers(EmployerRegistrationRequest registrationRequest) throws UserAlreadyExistsException, RequiredFieldException {
-        validateEmployersEmail(registrationRequest.getEmail());
-        Employers employers = buildEmployersRegistrations(registrationRequest);
+    public EmployerRegistrationResponse registerEmployers(EmployerRegistrationRequest registrationRequest) throws UserAlreadyExistsException, RequiredFieldException, WrongEmailOrPasswordException {
+//        validateEmployersEmail(registrationRequest.getEmail());
+        Employer employer = buildEmployersRegistrations(registrationRequest);
+        if(isValidEmail(registrationRequest.getEmail()))throw new WrongEmailOrPasswordException("wrong email or password");
+        if(isValidPassword(registrationRequest.getPassword()))throw new WrongEmailOrPasswordException("Wrong email or password");
         validateAllNullAndEmptyInput(registrationRequest.getEmail(),
                 registrationRequest.getCompanyDescription(), registrationRequest.getCompanyLocation()
                 , registrationRequest.getCompanyName(), registrationRequest.getPassword(),registrationRequest.getRole());
-        employersRepository.save(employers);
+        validateEmployersPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+        employersRepository.save(employer);
         EmployerRegistrationResponse employeeResponse = new EmployerRegistrationResponse();
         employeeResponse.setMessage("Welcome onboard");
         return employeeResponse;
     }
-
-    private boolean isInputNullOrEmpty(String userInput) {
-        return userInput == null || userInput.isEmpty();
+    private void validateEmployersPassword(String password) throws WrongEmailOrPasswordException {
+        if(passwordEncoder.encode(password).matches(password))throw new WrongEmailOrPasswordException("wrong password or email");
     }
 
+    private boolean isValidPassword(String password) {return VALIDATE_PASSWORDS.matcher(password).matches();}
+    private boolean isValidEmail(String email) {return VALIDATE_USERS_EMAILS.matcher(email).matches();}
+    private boolean isInputNullOrEmpty(String userInput) {return userInput == null || userInput.isEmpty();}
+
+
     private void validateEmployersEmail(String email) throws UserAlreadyExistsException {
-        boolean isEmployerAlreadyExists = employersRepository.existsByEmail(email);
-        if (isEmployerAlreadyExists)throw new UserAlreadyExistsException("Email already exists");
+        boolean isEmailEmpty = employersRepository.existsByEmail(email);
+        if(isEmailEmpty) throw new UserAlreadyExistsException("User with this email already exists");
     }
 
     @Override
-    public UpLoadPostResponse uploadPost(UpLoadPostRequest upLoadPostRequest) throws EmployersNotFoundException, IdNotFoundException, JobsNotFoundException {
+    public UpLoadPostResponse uploadPost(UpLoadPostRequest upLoadPostRequest) throws EmployersNotFoundException,
+            IdNotFoundException, JobsNotFoundException, InvalidUserException {
+        Employer employer = employersRepository.findById(upLoadPostRequest.getEmployerId())
+                .orElseThrow(()-> new EmployersNotFoundException("Employer does not exist"));
         UpLoadPostResponse upLoadPostResponse = jobPostService.uploadPost(upLoadPostRequest);
-        JobPost jobPost = jobPostRepository.findById(upLoadPostRequest.getJobPostId()).orElseThrow(()-> new JobsNotFoundException("Job not found"));
-        Employers employers = employersRepository.findById(upLoadPostRequest.getEmployerId()).orElseThrow(()-> new EmployersNotFoundException("Employer not found"));
-        List<JobPost> jobPosts = employers.getJobPosts();
+        JobPost jobPost = jobPostService.searchByEmployerId(upLoadPostResponse.getJobPostId());
+        validateUserIsLogged(employer);
+        List<JobPost> jobPosts = employer.getJobPosts();
         jobPosts.add(jobPost);
-        employers.setJobPosts(jobPosts);
-        employersRepository.save(employers);
+        employer.setJobPosts(jobPosts);
+        employersRepository.save(employer);
         return upLoadPostResponse;
+    }
+
+    private void validateUserIsLogged(Employer employer) throws InvalidUserException {
+        if(!employer.isLoggedIn())throw new InvalidUserException("User is not logged");
     }
 
     @Override
     public EditProfileResponse editProfile(EditProfileRequest editProfileRequest) throws EmployersNotFoundException {
-        Employers employers = employersRepository.findById(editProfileRequest.getEmployerId())
+        Employer employer = employersRepository.findById(editProfileRequest.getEmployerId())
                 .orElseThrow(()-> new EmployersNotFoundException("Employer not found"));
-        modelMapper.map(editProfileRequest, Employers.class);
-        employersRepository.save(employers);
-        EditProfileResponse editProfileResponse = modelMapper.map(employers, EditProfileResponse.class);
+        modelMapper.map(editProfileRequest, Employer.class);
+        employersRepository.save(employer);
+        EditProfileResponse editProfileResponse = modelMapper.map(employer, EditProfileResponse.class);
         editProfileResponse.setMessage("Edited profile");
         return editProfileResponse;
     }
 
     @Override
-    public List<Employers> getAllEmployers() {
+    public List<Employer> getAllEmployers() {
         return employersRepository.findAll();
     }
 
     @Override
-    public List<Employers> getEmployersByCompanyName(String companyName) {
+    public List<Employer> getEmployersByCompanyName(String companyName) {
         return employersRepository.findByCompanyName(companyName);
     }
 
     @Override
-    public List<Employers> getEmployersByCompanyDescription(String companyDescription) {
+    public List<Employer> getEmployersByCompanyDescription(String companyDescription) {
         return employersRepository.findByCompanyDescription(companyDescription);
     }
 
     @Override
-    public List<Employers> getEmployersByCompanyLocation(String companyLocation) {
+    public List<Employer> getEmployersByCompanyLocation(String companyLocation) {
         return employersRepository.findByCompanyLocation(companyLocation);
     }
 
     @Override
-    public List<Employers> getEmployersByEmail(String email) {
+    public List<Employer> getEmployersByEmail(String email) {
         return employersRepository.findByEmail(email);
     }
 
@@ -115,7 +127,7 @@ public class EmployersServiceImpl implements EmployersService {
 
     @Override
     public DeleteUserResponse deleteEmployer(Long employerId) throws EmployersNotFoundException {
-        Employers employee = employersRepository.findById(employerId)
+        Employer employee = employersRepository.findById(employerId)
                 .orElseThrow(()-> new EmployersNotFoundException("Employer not found"));
         employersRepository.delete(employee);
         DeleteUserResponse deleteResponse = new DeleteUserResponse();
@@ -123,14 +135,29 @@ public class EmployersServiceImpl implements EmployersService {
         return deleteResponse;
     }
 
-    private static Employers buildEmployersRegistrations(EmployerRegistrationRequest registrationRequest) {
-        Employers employers = new Employers();
-        employers.setCompanyName(registrationRequest.getCompanyName());
-        employers.setEmail(registrationRequest.getEmail());
-        employers.setPassword(registrationRequest.getPassword());
-        employers.setCompanyLocation(registrationRequest.getCompanyLocation());
-        employers.setCompanyDescription(registrationRequest.getCompanyDescription());
-        employers.setRole(registrationRequest.getRole());
-        return employers;
+    @Override
+    public LoginUserResponse login(LoginUserRequest loginUserRequest) throws EmployersNotFoundException, WrongEmailOrPasswordException {
+        Employer employer = employersRepository.findEmployersByEmail(loginUserRequest.getEmail())
+                .orElseThrow(() -> new EmployersNotFoundException("You have to register"));
+        validateEmployersPassword(employer.getPassword()); // this method checks if password is correct;
+        if (!employer.getPassword().equals(loginUserRequest.getPassword())) throw new WrongEmailOrPasswordException("Wrong email or password");
+        employer.setPassword(loginUserRequest.getPassword());
+        employer.setLoggedIn(true);
+        employersRepository.save(employer);
+        LoginUserResponse loginUserResponse = modelMapper.map(employer, LoginUserResponse.class);
+        loginUserResponse.setMessage("Login successful");
+        return loginUserResponse;
     }
+
+    private static Employer buildEmployersRegistrations(EmployerRegistrationRequest registrationRequest) {
+        Employer employer = new Employer();
+        employer.setCompanyName(registrationRequest.getCompanyName());
+        employer.setEmail(registrationRequest.getEmail());
+        employer.setPassword(registrationRequest.getPassword());
+        employer.setCompanyLocation(registrationRequest.getCompanyLocation());
+        employer.setCompanyDescription(registrationRequest.getCompanyDescription());
+        employer.setRole(registrationRequest.getRole());
+        return employer;
+    }
+
 }
