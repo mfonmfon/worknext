@@ -7,6 +7,10 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.PERSIST;
+
 @Getter
 @Setter
 @Entity
@@ -22,4 +26,6 @@ public class JobPost {
     private LocalDateTime lastModified;
     @ManyToOne
     private Employer employer;
+    @OneToMany(mappedBy = "job_post", cascade = {PERSIST})
+    private List<JobApplication> jobApplication;
 }
