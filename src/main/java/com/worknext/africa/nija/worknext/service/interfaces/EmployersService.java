@@ -5,7 +5,7 @@ import com.worknext.africa.nija.worknext.Dtos.request.EmployerRegistrationReques
 import com.worknext.africa.nija.worknext.Dtos.request.LoginUserRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.UpLoadPostRequest;
 import com.worknext.africa.nija.worknext.Dtos.response.*;
-import com.worknext.africa.nija.worknext.data.model.Employers;
+import com.worknext.africa.nija.worknext.data.model.Employer;
 import com.worknext.africa.nija.worknext.exceptions.*;
 
 import java.util.List;
@@ -17,15 +17,15 @@ public interface EmployersService {
 
     EditProfileResponse editProfile(EditProfileRequest editProfileRequest) throws EmployersNotFoundException;
 
-    List<Employers> getAllEmployers();
+    List<Employer> getAllEmployers();
 
-    List<Employers> getEmployersByCompanyName(String companyName);
+    List<Employer> getEmployersByCompanyName(String companyName);
 
-    List<Employers> getEmployersByCompanyDescription(String companyDescription);
+    List<Employer> getEmployersByCompanyDescription(String companyDescription);
 
-    List<Employers> getEmployersByCompanyLocation(String companyLocation);
+    List<Employer> getEmployersByCompanyLocation(String companyLocation);
 
-    List<Employers> getEmployersByEmail(String email);
+    List<Employer> getEmployersByEmail(String email);
 
     void getEmployersById(Long employerId) throws EmployersNotFoundException;
 

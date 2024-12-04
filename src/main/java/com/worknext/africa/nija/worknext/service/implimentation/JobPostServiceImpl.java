@@ -5,7 +5,7 @@ import com.worknext.africa.nija.worknext.Dtos.request.UpLoadPostRequest;
 import com.worknext.africa.nija.worknext.Dtos.response.DeleteJobPostResponse;
 import com.worknext.africa.nija.worknext.Dtos.response.EditJobPostResponse;
 import com.worknext.africa.nija.worknext.Dtos.response.UpLoadPostResponse;
-import com.worknext.africa.nija.worknext.data.model.Employers;
+import com.worknext.africa.nija.worknext.data.model.Employer;
 import com.worknext.africa.nija.worknext.data.model.JobPost;
 import com.worknext.africa.nija.worknext.data.repository.EmployersRepository;
 import com.worknext.africa.nija.worknext.data.repository.JobPostRepository;
@@ -28,9 +28,9 @@ public class JobPostServiceImpl implements JobPostService {
 
     @Override
     public UpLoadPostResponse uploadPost(UpLoadPostRequest uploadPostRequest) throws EmployersNotFoundException {
-        Employers employers = employersRepository.findById(uploadPostRequest.getEmployerId())
+        Employer employer = employersRepository.findById(uploadPostRequest.getEmployerId())
                 .orElseThrow(()-> new EmployersNotFoundException("Employer not found"));
-        JobPost jobPost = buildJobPostOpeningUpload(uploadPostRequest, employers);
+        JobPost jobPost = buildJobPostOpeningUpload(uploadPostRequest, employer);
         jobPostRepository.save(jobPost);
         UpLoadPostResponse upLoadPostResponse = new UpLoadPostResponse();
         upLoadPostResponse.setJobPostId(jobPost.getId());
@@ -88,14 +88,14 @@ public class JobPostServiceImpl implements JobPostService {
         return jobPost;
     }
 
-    private static JobPost buildJobPostOpeningUpload(UpLoadPostRequest uploadPostRequest, Employers employers) {
+    private static JobPost buildJobPostOpeningUpload(UpLoadPostRequest uploadPostRequest, Employer employer) {
         JobPost jobPost = new JobPost();
         jobPost.setJobTitle(uploadPostRequest.getJobTitle());
         jobPost.setJobDescription(uploadPostRequest.getJobDescription());
         jobPost.setSalaryRange(uploadPostRequest.getSalaryRange());
         jobPost.setJobType(uploadPostRequest.getJobType());
         jobPost.setPostedAt(uploadPostRequest.getPostedAt());
-        jobPost.setEmployers(employers);
+        jobPost.setEmployer(employer);
         return jobPost;
     }
 }

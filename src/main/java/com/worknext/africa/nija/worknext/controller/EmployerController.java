@@ -47,8 +47,8 @@ public class EmployerController {
             return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
-    @PutMapping("/editPost")
-    public ResponseEntity<?> editPost(@RequestBody EditProfileRequest editProfileRequest){
+    @PutMapping("/editProfile")
+    public ResponseEntity<?> editProfile(@RequestBody EditProfileRequest editProfileRequest){
         try{
             EditProfileResponse editProfileResponse = employerService.editProfile(editProfileRequest);
             return new ResponseEntity<>(new ApiResponse(true, editProfileResponse), HttpStatus.OK);
@@ -58,7 +58,7 @@ public class EmployerController {
     }
 
     @DeleteMapping("/deletePost/{jobPostId}")
-    public ResponseEntity<?> deletePost(@PathVariable Long jobPostId){
+    public ResponseEntity<?> deleteAccount(@PathVariable Long jobPostId){
         try{
             DeleteUserResponse deleteUserResponse = employerService.deleteEmployer(jobPostId);
             return new ResponseEntity<>(new ApiResponse(true, deleteUserResponse), HttpStatus.OK);

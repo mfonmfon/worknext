@@ -7,12 +7,10 @@ import lombok.Setter;
 
 import java.util.List;
 
-import static jakarta.persistence.CascadeType.PERSIST;
-
 @Getter
 @Setter
 @Entity
-public class Employers {
+public class Employer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,6 +23,6 @@ public class Employers {
     private boolean isLoggedIn;
     @Enumerated
     private UserRole role;
-    @OneToMany(mappedBy = "employers", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobPost> jobPosts;
 }

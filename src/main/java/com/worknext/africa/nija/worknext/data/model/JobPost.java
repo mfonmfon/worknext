@@ -21,5 +21,5 @@ public class JobPost {
     private LocalDateTime postedAt;
     private LocalDateTime lastModified;
     @ManyToOne
-    private Employers employers;
+    private Employer employer;
 }
