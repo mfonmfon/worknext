@@ -16,14 +16,14 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class JobApplicationServiceImpl implements JobApplicationService {
-
     private final JobApplicationRepository jobApplicationRepository;
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
 
     @Override
     public JobApplicationResponse applyJob(JobApplicationRequest application) throws UserNotFoundException {
-        Employee employee = employeeRepository.findById(application.getEmployeeId()).orElseThrow(()-> new UserNotFoundException("Employee not found"));
+        Employee employee = employeeRepository.findById(application.getEmployeeId())
+                .orElseThrow(()-> new UserNotFoundException("Employee not found"));
         JobApplication jobApplication = modelMapper.map(application, JobApplication.class);
         jobApplication.setEmployee(employee);
         jobApplicationRepository.save(jobApplication);

@@ -20,8 +20,11 @@ public class JobApplication {
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
-
     @OneToOne
     @JoinColumn(name = "resume_id")
     private Resume resume;
+
+    @ManyToOne
+    @JoinColumn(name = "job_post_id")
+    private JobPost jobPost;
 }
