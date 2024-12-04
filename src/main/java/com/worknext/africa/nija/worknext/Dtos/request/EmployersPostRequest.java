@@ -8,14 +8,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 @Getter
 @Setter
-public class UpLoadPostRequest {
+public class EmployersPostRequest {
     private Long jobPostId;
-    private Long employerId;
     private String email;
     private String jobTitle;
     private String jobDescription;
     private JobType jobType;
     private BigDecimal salaryRange;
     private LocalDateTime postedAt;
-
 }

@@ -17,6 +17,10 @@ public interface EmployersRepository extends JpaRepository<Employers, Long> {
 
     List<Employers> findByEmail(String email);
 
-    Optional<Employers> getUserByEmail(String email);
+//    Optional<Employers> getUserByEmail(String email);
 
+    Optional <Employers> findEmployersByEmail(String email);
+
+
+//    Optional<Employers> findByEmail(String employerId);
 }

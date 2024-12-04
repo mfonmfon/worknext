@@ -13,7 +13,7 @@ import java.util.List;
 public interface EmployersService {
     EmployerRegistrationResponse registerEmployers(EmployerRegistrationRequest registrationRequest) throws UserAlreadyExistsException, RequiredFieldException, WrongEmailOrPasswordException;
 
-    UpLoadPostResponse uploadPost(UpLoadPostRequest upLoadPostRequest) throws EmployersNotFoundException, IdNotFoundException, JobsNotFoundException;
+    UpLoadPostResponse uploadPost(UpLoadPostRequest upLoadPostRequest) throws EmployersNotFoundException, IdNotFoundException, JobsNotFoundException, InvalidUserException;
 
     EditProfileResponse editProfile(EditProfileRequest editProfileRequest) throws EmployersNotFoundException;
 

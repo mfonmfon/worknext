@@ -33,6 +33,7 @@ public class JobPostServiceImpl implements JobPostService {
         JobPost jobPost = buildJobPostOpeningUpload(uploadPostRequest, employers);
         jobPostRepository.save(jobPost);
         UpLoadPostResponse upLoadPostResponse = new UpLoadPostResponse();
+        upLoadPostResponse.setJobPostId(jobPost.getId());
         upLoadPostResponse.setMessage("Job Post uploaded successfully");
         return upLoadPostResponse;
     }

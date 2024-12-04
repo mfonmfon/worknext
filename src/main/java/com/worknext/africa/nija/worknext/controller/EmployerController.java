@@ -2,6 +2,7 @@ package com.worknext.africa.nija.worknext.controller;
 
 import com.worknext.africa.nija.worknext.Dtos.request.EditProfileRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.EmployerRegistrationRequest;
+import com.worknext.africa.nija.worknext.Dtos.request.LoginUserRequest;
 import com.worknext.africa.nija.worknext.Dtos.request.UpLoadPostRequest;
 import com.worknext.africa.nija.worknext.Dtos.response.*;
 import com.worknext.africa.nija.worknext.exceptions.EmployersNotFoundException;
@@ -23,6 +24,17 @@ public class EmployerController {
             EmployerRegistrationResponse employerRegistrationResponse  = employerService.registerEmployers(employerRegistrationRequest);
             return new ResponseEntity<>(new ApiResponse(true, employerRegistrationResponse), HttpStatus.CREATED);
         } catch (Exception exception) {
+            return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginUserRequest loginUserRequest){
+        try{
+            LoginUserResponse loginUserResponse = employerService.login(loginUserRequest);
+            return new ResponseEntity<>(new ApiResponse(true, loginUserResponse), HttpStatus.OK);
+        }
+        catch(Exception exception){
             return new ResponseEntity<>(new ApiResponse(false, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }

@@ -6,5 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpLoadPostResponse {
+    private Long jobPostId;
     private String message;
 }
