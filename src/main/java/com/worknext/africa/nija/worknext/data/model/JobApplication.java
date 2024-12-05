@@ -23,8 +23,7 @@ public class JobApplication {
     @OneToOne
     @JoinColumn(name = "resume_id")
     private Resume resume;
-
     @ManyToOne
-    @JoinColumn(name = "job_post_id")
+//    @JoinColumn(name = "job_post_id", nullable =false)
     private JobPost jobPost;
 }
