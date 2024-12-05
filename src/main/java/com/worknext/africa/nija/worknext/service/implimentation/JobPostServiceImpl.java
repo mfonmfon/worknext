@@ -28,8 +28,8 @@ public class JobPostServiceImpl implements JobPostService {
 
     @Override
     public UpLoadPostResponse uploadPost(UpLoadPostRequest uploadPostRequest) throws EmployersNotFoundException {
-        Employer employer = employersRepository.findById(uploadPostRequest.getEmployerId())
-                .orElseThrow(()-> new EmployersNotFoundException("Employer not found"));
+        Employer employer = employersRepository.getUserByEmail(uploadPostRequest.getEmail())
+                .orElseThrow(()-> new EmployersNotFoundException("The Employer not found"));
         JobPost jobPost = buildJobPostOpeningUpload(uploadPostRequest, employer);
         jobPostRepository.save(jobPost);
         UpLoadPostResponse upLoadPostResponse = new UpLoadPostResponse();
