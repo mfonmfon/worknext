@@ -36,7 +36,7 @@ class JobPostServiceTest {
         uploadPostRequest.setJobTitle("Software engineer ");
         uploadPostRequest.setJobDescription("Software Engineer");
         uploadPostRequest.setJobType(JobType.INTERNSHIP);
-        uploadPostRequest.setSalaryRange(BigDecimal.valueOf(100));
+        uploadPostRequest.setSalaryRange("3000");
         uploadPostRequest.setPostedAt(now());
         UpLoadPostResponse upLoadPostResponse = jobPostService.uploadPost(uploadPostRequest);
         assertNotNull(upLoadPostResponse);
