@@ -92,13 +92,12 @@ public class EmployerServiceTest {
         UpLoadPostRequest upLoadPostRequest = new UpLoadPostRequest();
         upLoadPostRequest.setJobTitle("Backend Java Engineer");
         upLoadPostRequest.setJobDescription("Integrate the backend and the frontend");
-        upLoadPostRequest.setSalaryRange(BigDecimal.valueOf(4000000));
+        upLoadPostRequest.setSalaryRange("4000000");
         upLoadPostRequest.setJobType(FULL_TIME);
         upLoadPostRequest.setPostedAt(now());
         upLoadPostRequest.setEmployerId(3L);
         return upLoadPostRequest;
     }
-
     @Test
     public void testThatEmployerCanEditProfile() throws WrongEmailOrPasswordException, EmployersNotFoundException {
         buildEmployerRegistrationRequest();

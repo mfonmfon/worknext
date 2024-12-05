@@ -82,7 +82,7 @@ public class JobPostServiceImpl implements JobPostService {
                 .orElseThrow(()-> new JobsNotFoundException("Job post not found"));
         jobPost.setJobTitle(uploadPostRequest.getJobTitle());
         jobPost.setJobDescription(uploadPostRequest.getJobDescription());
-        jobPost.setSalaryRange(uploadPostRequest.getSalaryRange());
+        jobPost.setSalaryRange(uploadPostRequest.getSalaryRange().toString());
         jobPost.setJobType(uploadPostRequest.getJobType());
         jobPost.setLastModified(uploadPostRequest.getLastModifiedAt());
         return jobPost;
