@@ -9,12 +9,14 @@ import com.worknext.africa.nija.worknext.data.repository.EmployersRepository;
 import com.worknext.africa.nija.worknext.data.repository.JobApplicationRepository;
 import com.worknext.africa.nija.worknext.exceptions.UserNotFoundException;
 import com.worknext.africa.nija.worknext.service.interfaces.JobApplicationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class JobApplicationServiceImpl implements JobApplicationService {
     private final JobApplicationRepository jobApplicationRepository;
     private final EmployeeRepository employeeRepository;

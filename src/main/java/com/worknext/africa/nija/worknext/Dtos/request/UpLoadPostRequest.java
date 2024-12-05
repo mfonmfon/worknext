@@ -15,7 +15,7 @@ public class UpLoadPostRequest {
     private String jobTitle;
     private String jobDescription;
     private JobType jobType;
-    private BigDecimal salaryRange;
+    private String salaryRange;
     private LocalDateTime postedAt;
 
 }

@@ -86,8 +86,8 @@ public class EmployersServiceImpl implements EmployersService {
     public EditProfileResponse editProfile(EditProfileRequest editProfileRequest) throws EmployersNotFoundException {
         Employer employer = employersRepository.findById(editProfileRequest.getEmployerId())
                 .orElseThrow(()-> new EmployersNotFoundException("Employer not found"));
-        Employer employers = modelMapper.map(editProfileRequest, Employer.class);
-        employersRepository.save(employers);
+        modelMapper.map(editProfileRequest, Employer.class);
+        employersRepository.save(employer);
         EditProfileResponse editProfileResponse = modelMapper.map(employer, EditProfileResponse.class);
         editProfileResponse.setMessage("Edited profile");
         return editProfileResponse;
