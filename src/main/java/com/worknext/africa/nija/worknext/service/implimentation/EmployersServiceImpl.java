@@ -66,7 +66,7 @@ public class EmployersServiceImpl implements EmployersService {
     @Override
     public UpLoadPostResponse uploadPost(UpLoadPostRequest upLoadPostRequest) throws EmployersNotFoundException,
             IdNotFoundException, JobsNotFoundException, InvalidUserException {
-        Employer employer = employersRepository.findById(upLoadPostRequest.getEmployerId())
+        Employer employer = employersRepository.getUserByEmail(upLoadPostRequest.getEmail())
                 .orElseThrow(()-> new EmployersNotFoundException("Employer does not exist"));
         UpLoadPostResponse upLoadPostResponse = jobPostService.uploadPost(upLoadPostRequest);
         JobPost jobPost = jobPostService.searchByEmployerId(upLoadPostResponse.getJobPostId());
