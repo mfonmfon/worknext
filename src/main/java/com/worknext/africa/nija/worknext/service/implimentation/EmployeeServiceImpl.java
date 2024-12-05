@@ -56,7 +56,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public JobApplicationResponse applyForJob(JobApplicationRequest jobApplicationRequest) throws UserNotFoundException, ApplicationNotFoundException {
         JobApplicationResponse jobApplicationResponse = jobApplicationService.applyJob(jobApplicationRequest);
         JobApplication jobApplication = jobApplicationRepository.findById(jobApplicationRequest.getJobApplicationId()).orElseThrow(()-> new ApplicationNotFoundException("application not found"));
-        Employee employee = employeeRepository.findById(jobApplicationRequest.getEmployeeId()).orElseThrow(()-> new UserNotFoundException("Employee not found"));
+        Employee employee = employeeRepository.findByEmail(jobApplicationRequest.getEmail()).orElseThrow(()-> new UserNotFoundException("Employee not found"));
         jobApplication.setEmployee(employee);
         List<JobApplication> listOfAllJobApplications = employee.getJobApplications();
         employee.setJobApplications(listOfAllJobApplications);

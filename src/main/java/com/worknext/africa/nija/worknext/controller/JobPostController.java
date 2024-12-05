@@ -22,8 +22,8 @@ import java.util.List;
 public class JobPostController {
     private final JobPostService jobPostService;
 
-    @PostMapping("")
-    public ResponseEntity<?> postJob(UpLoadPostRequest upLoadPostRequest){
+    @PostMapping("postJob")
+    public ResponseEntity<?> postJob(@RequestBody UpLoadPostRequest upLoadPostRequest){
         try{
             UpLoadPostResponse upLoadPostResponse = jobPostService.uploadPost(upLoadPostRequest);
             return new ResponseEntity<>(new ApiResponse(true, upLoadPostResponse), HttpStatus.CREATED);
@@ -33,8 +33,8 @@ public class JobPostController {
         }
     }
 
-    @PatchMapping("")
-    public ResponseEntity<?> updateJob(EditJobPostRequest editJobPostRequest){
+    @PatchMapping("/updateJob")
+    public ResponseEntity<?> updateJob(@RequestBody EditJobPostRequest editJobPostRequest){
         try{
             EditJobPostResponse editJobPostResponse = jobPostService.editJobPost(editJobPostRequest);
             return new ResponseEntity<>(new ApiResponse(true, editJobPostResponse), HttpStatus.OK);
@@ -44,8 +44,8 @@ public class JobPostController {
         }
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<?> deletePost(Long jobPostId){
+    @DeleteMapping("/deletePost/{jobPostId}")
+    public ResponseEntity<?> deletePost(@PathVariable Long jobPostId){
         try{
             DeleteJobPostResponse deleteJobPostResponse = jobPostService.deleteJobPost(jobPostId);
             return new ResponseEntity<>(new ApiResponse(true, deleteJobPostResponse), HttpStatus.OK);
